@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عداد التسبيح</title>
+    <style>
+        :root {
+            --primary-color: #4c956c;
+            --secondary-color: #2c6e49;
+            --background-color: #f8f9fa;
+            --text-color: #343a40;
+            --card-color: #ffffff;
+            --border-color: #e9ecef;
+            --count-color: #2c6e49;
+            --button-color: #4c956c;
+            --button-text: #ffffff;
+            --header-color: #2c6e49;
+        }
+
+        .dark-mode {
+            --primary-color: #2c6e49;
+            --secondary-color: #4c956c;
+            --background-color: #121212;
+            --text-color: #e9ecef;
+            --card-color: #1e1e1e;
+            --border-color: #333;
+            --count-color: #4c956c;
+            --button-color: #2c6e49;
+            --button-text: #f8f9fa;
+            --header-color: #1e1e1e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', 'Arial', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--header-color);
+            color: #ffffff;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+            flex: 1;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .dhikr-select {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dhikr-select label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .dhikr-select select {
+            padding: 0.8rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-color);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .counter-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .dhikr-text {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .counter {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: var(--card-color);
+            border: 4px solid var(--primary-color);
+            color: var(--count-color);
+            font-size: 2.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            user-select: none;
+            position: relative;
+        }
+
+        .counter span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .counter-info {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        .counter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--button-color);
+            color: var(--button-text);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-tasbih {
+            background-color: var(--primary-color);
+            font-size: 1.2rem;
+            padding: 1rem 2rem;
+        }
+
+        .btn-reset {
+            background-color: #dc3545;
+        }
+
+        .settings-container {
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        .settings-container.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-color);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .dhikr-list {
+            margin-top: 1.5rem;
+        }
+
+        .dhikr-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dhikr-item:last-child {
+            border-bottom: none;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.3rem 0.6rem;
+            cursor: pointer;
+        }
+
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .tab-button {
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--card-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        @media (max-width: 480px) {
+            .counter {
+                width: 120px;
+                height: 120px;
+                font-size: 2rem;
+            }
+            
+            .dhikr-text {
+                font-size: 1.2rem;
+            }
+            
+            .counter-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .tab-button {
+                width: 100%;
+            }
+        }
+
+        .mode-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>عداد التسبيح</h1>
+    </header>
+
+    <div class="container">
+        <div class="nav-buttons">
+            <button class="tab-button active" id="counter-tab">التسبيح</button>
+            <button class="tab-button" id="settings-tab">الإعدادات</button>
+        </div>
+
+        <div class="app-container">
+            <div class="counter-tab">
+                <div class="card">
+                    <div class="dhikr-select">
+                        <label for="dhikr-select">اختر الذكر:</label>
+                        <select id="dhikr-select">
+                            <option value="0">سبحان الله - 33</option>
+                            <option value="1">الحمد لله - 33</option>
+                            <option value="2">الله أكبر - 33</option>
+                            <option value="3">لا إله إلا الله - 100</option>
+                            <option value="4">استغفر الله - 100</option>
+                        </select>
+                    </div>
+
+                    <div class="counter-container">
+                        <div class="dhikr-text" id="current-dhikr">سبحان الله</div>
+                        <div class="counter" id="counter">
+                            <span id="count">33</span>
+                        </div>
+                        <div class="counter-info">
+                            <div id="remaining">المتبقي: 33</div>
+                        </div>
+                    </div>
+
+                    <div class="switch-container">
+                        <label class="switch">
+                            <input type="checkbox" id="auto-next">
+                            <span class="slider"></span>
+                        </label>
+                        <span>الانتقال التلقائي للذكر التالي</span>
+                    </div>
+
+                    <div class="counter-buttons">
+                        <button class="btn btn-tasbih" id="count-btn">تسبيح</button>
+                        <button class="btn btn-reset" id="reset-btn">إعادة ضبط</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-container">
+                <div class="card">
+                    <h2>إضافة ذكر جديد</h2>
+                    <div class="form-group">
+                        <label for="new-dhikr">نص الذكر:</label>
+                        <input type="text" id="new-dhikr" placeholder="أدخل الذكر الجديد">
+                    </div>
+                    <div class="form-group">
+                        <label for="dhikr-count">عدد التكرارات:</label>
+                        <input type="number" id="dhikr-count" min="1" value="33">
+                    </div>
+                    <button class="btn" id="add-dhikr">إضافة</button>
+
+                    <div class="dhikr-list">
+                        <h3>قائمة الأذكار</h3>
+                        <div id="dhikr-items">
+                            <!-- Dhikr items will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            تطبيق عداد التسبيح © 2025
+        </div>
+    </div>
+
+    <button class="mode-toggle" id="mode-toggle">☀️</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial dhikr list
+            const dhikrList = [
+                { text: 'سبحان الله', count: 33 },
+                { text: 'الحمد لله', count: 33 },
+                { text: 'الله أكبر', count: 33 },
+                { text: 'لا إله إلا الله', count: 100 },
+                { text: 'استغفر الله', count: 100 }
+            ];
+
+            // DOM elements
+            const counterTab = document.getElementById('counter-tab');
+            const settingsTab = document.getElementById('settings-tab');
+            const counterTabContent = document.querySelector('.counter-tab');
+            const settingsContainer = document.querySelector('.settings-container');
+            const dhikrSelect = document.getElementById('dhikr-select');
+            const currentDhikr = document.getElementById('current-dhikr');
+            const countElement = document.getElementById('count');
+            const remainingElement = document.getElementById('remaining');
+            const countBtn = document.getElementById('count-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const autoNext = document.getElementById('auto-next');
+            const addDhikrBtn = document.getElementById('add-dhikr');
+            const newDhikrInput = document.getElementById('new-dhikr');
+            const dhikrCountInput = document.getElementById('dhikr-count');
+            const dhikrItems = document.getElementById('dhikr-items');
+            const modeToggle = document.getElementById('mode-toggle');
+            const counter = document.getElementById('counter');
+
+            // Variables
+            let currentIndex = 0;
+            let currentCount = dhikrList[currentIndex].count;
+            let originalCount = currentCount;
+
+            // Initialize
+            updateDhikrDisplay();
+            renderDhikrList();
+
+            // Tab switching
+            counterTab.addEventListener('click', function() {
+                counterTab.classList.add('active');
+                settingsTab.classList.remove('active');
+                counterTabContent.style.display = 'block';
+                settingsContainer.style.display = 'none';
+            });
+
+            settingsTab.addEventListener('click', function() {
+                settingsTab.classList.add('active');
+                counterTab.classList.remove('active');
+                counterTabContent.style.display = 'none';
+                settingsContainer.style.display = 'block';
+            });
+
+            // Counter functionality - now using the tasbih button instead of the counter circle
+            countBtn.addEventListener('click', function() {
+                if (currentCount > 0) {
+                    currentCount--;
+                    updateDhikrDisplay();
+
+                    // Give visual feedback
+                    countBtn.classList.add('pulse');
+                    setTimeout(() => {
+                        countBtn.classList.remove('pulse');
+                    }, 150);
+
+                    if (currentCount === 0) {
+                        if (autoNext.checked) {
+                            setTimeout(() => {
+                                nextDhikr();
+                            }, 1000);
+                        }
+                    }
+                }
+            });
+
+            // Reset button functionality remains the same
+            resetBtn.addEventListener('click', function() {
+                currentCount = originalCount;
+                updateDhikrDisplay();
+            });
+
+            // Change dhikr selection
+            dhikrSelect.addEventListener('change', function() {
+                currentIndex = parseInt(this.value);
+                currentCount = dhikrList[currentIndex].count;
+                originalCount = currentCount;
+                updateDhikrDisplay();
+            });
+
+            // Add new dhikr
+            addDhikrBtn.addEventListener('click', function() {
+                const text = newDhikrInput.value.trim();
+                const count = parseInt(dhikrCountInput.value);
+
+                if (text && count > 0) {
+                    dhikrList.push({ text, count });
+                    renderDhikrList();
+                    updateDhikrSelect();
+                    newDhikrInput.value = '';
+                    dhikrCountInput.value = '33';
+                }
+            });
+
+            // Toggle dark mode
+            modeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    modeToggle.textContent = '🌙';
+                } else {
+                    modeToggle.textContent = '☀️';
+                }
+            });
+
+            // Helper functions
+            function updateDhikrDisplay() {
+                currentDhikr.textContent = dhikrList[currentIndex].text;
+                countElement.textContent = currentCount;
+                remainingElement.textContent = `المتبقي: ${currentCount}`;
+            }
+
+            function nextDhikr() {
+                currentIndex = (currentIndex + 1) % dhikrList.length;
+                dhikrSelect.value = currentIndex;
+                currentCount = dhikrList[currentIndex].count;
+                originalCount = currentCount;
+                updateDhikrDisplay();
+            }
+
+            function renderDhikrList() {
+                dhikrItems.innerHTML = '';
+                dhikrList.forEach((dhikr, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'dhikr-item';
+                    item.innerHTML = `
+                        <div>${dhikr.text} - ${dhikr.count}</div>
+                        <button class="delete-btn" data-index="${index}">حذف</button>
+                    `;
+                    dhikrItems.appendChild(item);
+                });
+
+                // Add delete functionality
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        if (dhikrList.length > 1) {
+                            dhikrList.splice(index, 1);
+                            renderDhikrList();
+                            updateDhikrSelect();
+                            if (currentIndex >= dhikrList.length) {
+                                currentIndex = 0;
+                            }
+                            currentCount = dhikrList[currentIndex].count;
+                            originalCount = currentCount;
+                            updateDhikrDisplay();
+                        }
+                    });
+                });
+            }
+
+            function updateDhikrSelect() {
+                dhikrSelect.innerHTML = '';
+                dhikrList.forEach((dhikr, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${dhikr.text} - ${dhikr.count}`;
+                    dhikrSelect.appendChild(option);
+                });
+                dhikrSelect.value = currentIndex;
+            }
+
+            // Add keyboard support (spacebar) for tasbih
+            document.addEventListener('keydown', function(event) {
+                if (event.code === 'Space' && counterTabContent.style.display !== 'none') {
+                    event.preventDefault(); // Prevent page scrolling
+                    countBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

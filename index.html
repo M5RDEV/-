@@ -54,10 +54,44 @@
             text-align: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: background-color 0.5s;
+            position: relative;
+        }
+
+        .header-icons {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 1rem;
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .header-icon {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .header-icon:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        @media (min-width: 769px) {
+            .header-icons {
+                display: none;
+            }
         }
 
         .container {
-            max-width: 600px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 1rem;
             flex: 1;
@@ -65,8 +99,39 @@
 
         .app-container {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+        }
+
+        .counter-tab {
+            flex: 2;
+            transition: all 0.3s ease;
+        }
+
+        .settings-container {
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .settings-container {
+                display: none;
+            }
+
+            .settings-container.active {
+                display: block;
+            }
+
+            .counter-tab.hidden {
+                display: none;
+            }
         }
 
         .card {
@@ -75,12 +140,14 @@
             padding: 1.5rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transition: background-color 0.5s;
+            height: 100%;
         }
 
         .dhikr-select {
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            position: relative;
         }
 
         .dhikr-select label {
@@ -179,15 +246,6 @@
 
         .btn-reset {
             background-color: #dc3545;
-        }
-
-        .settings-container {
-            display: none;
-            margin-top: 1.5rem;
-        }
-
-        .settings-container.active {
-            display: block;
         }
 
         .form-group {
@@ -301,60 +359,6 @@
             opacity: 0.8;
         }
 
-        .nav-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .tab-button {
-            padding: 0.7rem 1.2rem;
-            border: none;
-            border-radius: 4px;
-            background-color: var(--card-color);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .tab-button.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        @media (max-width: 480px) {
-            .counter {
-                width: 120px;
-                height: 120px;
-                font-size: 2rem;
-            }
-            
-            .dhikr-text {
-                font-size: 1.2rem;
-            }
-            
-            .counter-buttons {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            .btn {
-                width: 100%;
-            }
-            
-            .nav-buttons {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            .tab-button {
-                width: 100%;
-            }
-        }
-
         .mode-toggle {
             position: fixed;
             bottom: 20px;
@@ -399,6 +403,17 @@
             animation: celebrate 1s;
         }
 
+        /* New animation for hitting 100 milestone in open counter */
+        @keyframes milestone {
+            0% { transform: scale(1); border-color: var(--primary-color); }
+            50% { transform: scale(1.12); border-color: #ffc107; box-shadow: 0 0 25px rgba(255, 193, 7, 0.7); }
+            100% { transform: scale(1); border-color: var(--primary-color); }
+        }
+
+        .milestone {
+            animation: milestone 0.8s;
+        }
+
         @keyframes rotate {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -422,18 +437,19 @@
             transition: background-color 0.8s ease, color 0.8s ease, border-color 0.8s ease;
         }
     </style>
+    <!-- إضافة Font Awesome للأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
     <header>
         <h1>عداد التسبيح</h1>
+        <div class="header-icons">
+            <button class="header-icon" id="settings-icon"><i class="fas fa-cog"></i></button>
+            <button class="header-icon" id="back-icon" style="display: none;"><i class="fas fa-arrow-right"></i></button>
+        </div>
     </header>
 
     <div class="container">
-        <div class="nav-buttons">
-            <button class="tab-button active" id="counter-tab">التسبيح</button>
-            <button class="tab-button" id="settings-tab">الإعدادات</button>
-        </div>
-
         <div class="app-container">
             <div class="counter-tab">
                 <div class="card">
@@ -502,7 +518,7 @@
         </div>
     </div>
 
-    <button class="mode-toggle" id="mode-toggle">☀️</button>
+    <button class="mode-toggle" id="mode-toggle"><i class="fas fa-sun"></i></button>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -516,8 +532,8 @@
             ];
 
             // DOM elements
-            const counterTab = document.getElementById('counter-tab');
-            const settingsTab = document.getElementById('settings-tab');
+            const settingsIcon = document.getElementById('settings-icon');
+            const backIcon = document.getElementById('back-icon');
             const counterTabContent = document.querySelector('.counter-tab');
             const settingsContainer = document.querySelector('.settings-container');
             const dhikrSelect = document.getElementById('dhikr-select');
@@ -537,37 +553,63 @@
             // Variables
             let currentIndex = -1; // Start with the open counter
             let currentCount = 0;  // Start at 0 for open counter
-            let originalCount = 0; // Not used for open counter
+            let totalCount = 0;    // For counting upwards in regular dhikr mode
             let isOpenCounter = true; // Flag for open counter mode
 
             // Initialize
             updateDhikrDisplay();
             renderDhikrList();
 
-            // Tab switching
-            counterTab.addEventListener('click', function() {
-                counterTab.classList.add('active');
-                settingsTab.classList.remove('active');
-                counterTabContent.style.display = 'block';
-                settingsContainer.style.display = 'none';
+            // Settings icon click event (for mobile view)
+            settingsIcon.addEventListener('click', function() {
+                counterTabContent.classList.add('hidden');
+                settingsContainer.classList.add('active');
+                settingsIcon.style.display = 'none';
+                backIcon.style.display = 'flex';
             });
 
-            settingsTab.addEventListener('click', function() {
-                settingsTab.classList.add('active');
-                counterTab.classList.remove('active');
-                counterTabContent.style.display = 'none';
-                settingsContainer.style.display = 'block';
+            // Back icon click event (for mobile view)
+            backIcon.addEventListener('click', function() {
+                counterTabContent.classList.remove('hidden');
+                settingsContainer.classList.remove('active');
+                settingsIcon.style.display = 'flex';
+                backIcon.style.display = 'none';
             });
 
-            // Counter functionality - now handling both open and regular counters
+            // Counter functionality - now shows count upwards for ALL counters
             countBtn.addEventListener('click', function() {
                 if (isOpenCounter) {
                     // For open counter, increment
                     currentCount++;
+                    
+                    // Add animation for milestone every 100 counts
+                    if (currentCount % 100 === 0 && currentCount > 0) {
+                        counter.classList.add('milestone');
+                        setTimeout(() => {
+                            counter.classList.remove('milestone');
+                        }, 800);
+                    }
                 } else {
-                    // For regular counters, decrement
-                    if (currentCount > 0) {
-                        currentCount--;
+                    // For regular counters, increment the counting and decrement the remaining
+                    currentCount++;
+                    
+                    // Check if regular counter reached the target
+                    if (currentCount === dhikrList[currentIndex].count) {
+                        // Celebration animation
+                        counter.classList.add('celebrate');
+                        setTimeout(() => {
+                            counter.classList.remove('celebrate');
+                        }, 1000);
+                        
+                        // Auto-next if checked
+                        if (autoNext.checked) {
+                            setTimeout(() => {
+                                nextDhikr();
+                            }, 1000);
+                        }
+                    } else if (currentCount > dhikrList[currentIndex].count) {
+                        // Prevent exceeding the target count
+                        currentCount = dhikrList[currentIndex].count;
                     }
                 }
                 
@@ -578,31 +620,11 @@
                 setTimeout(() => {
                     countBtn.classList.remove('pulse');
                 }, 150);
-
-                // Check if regular counter reached zero
-                if (!isOpenCounter && currentCount === 0) {
-                    // Celebration animation
-                    counter.classList.add('celebrate');
-                    setTimeout(() => {
-                        counter.classList.remove('celebrate');
-                    }, 1000);
-                    
-                    // Auto-next if checked
-                    if (autoNext.checked) {
-                        setTimeout(() => {
-                            nextDhikr();
-                        }, 1000);
-                    }
-                }
             });
 
             // Reset button functionality 
             resetBtn.addEventListener('click', function() {
-                if (isOpenCounter) {
-                    currentCount = 0; // Reset to 0 for open counter
-                } else {
-                    currentCount = originalCount; // Reset to original for regular counters
-                }
+                currentCount = 0; // Reset to 0 for all counters
                 updateDhikrDisplay();
             });
 
@@ -613,13 +635,8 @@
                 // Check if open counter is selected
                 isOpenCounter = (currentIndex === -1);
                 
-                if (isOpenCounter) {
-                    currentCount = 0;
-                    originalCount = 0;
-                } else {
-                    currentCount = dhikrList[currentIndex].count;
-                    originalCount = currentCount;
-                }
+                // Reset counter to 0 when changing dhikr
+                currentCount = 0;
                 
                 updateDhikrDisplay();
             });
@@ -655,12 +672,12 @@
                 // Change icon with animation
                 if (document.body.classList.contains('dark-mode')) {
                     setTimeout(() => {
-                        modeToggle.textContent = '🌙';
+                        document.querySelector('.mode-toggle i').className = 'fas fa-moon';
                         modeToggle.classList.add('fade-in');
                     }, 300);
                 } else {
                     setTimeout(() => {
-                        modeToggle.textContent = '☀️';
+                        document.querySelector('.mode-toggle i').className = 'fas fa-sun';
                         modeToggle.classList.add('fade-in');
                     }, 300);
                 }
@@ -683,15 +700,12 @@
                     // For open counter
                     currentDhikr.textContent = "عداد مفتوح";
                     countElement.textContent = currentCount;
-                    // Hide the remaining counter for open counter
-                    remainingElement.style.display = 'none';
+                    remainingElement.textContent = `العدد الحالي: ${currentCount}`;
                 } else {
-                    // For regular counters
+                    // For regular counters, display the current count
                     currentDhikr.textContent = dhikrList[currentIndex].text;
                     countElement.textContent = currentCount;
-                    // Show and update the label for regular counters
-                    remainingElement.style.display = 'block';
-                    remainingElement.textContent = `العدد الحالي: ${currentCount}`;
+                    remainingElement.textContent = `العدد الحالي: ${currentCount} / ${dhikrList[currentIndex].count}`;
                 }
             }
 
@@ -710,14 +724,8 @@
                 // Update the isOpenCounter flag
                 isOpenCounter = (currentIndex === -1);
                 
-                // Set the current count
-                if (isOpenCounter) {
-                    currentCount = 0;
-                    originalCount = 0;
-                } else {
-                    currentCount = dhikrList[currentIndex].count;
-                    originalCount = currentCount;
-                }
+                // Reset the current count
+                currentCount = 0;
                 
                 // Apply animation to the counter text
                 countElement.classList.add('fade-in');
@@ -735,7 +743,7 @@
                     item.className = 'dhikr-item';
                     item.innerHTML = `
                         <div>${dhikr.text} - ${dhikr.count}</div>
-                        <button class="delete-btn" data-index="${index}">حذف</button>
+                        <button class="delete-btn" data-index="${index}"><i class="fas fa-trash-alt"></i></button>
                     `;
                     dhikrItems.appendChild(item);
                 });
@@ -750,10 +758,9 @@
                             updateDhikrSelect();
                             
                             // Handle the case when the current selected dhikr is deleted
-                            if (!isOpenCounter && currentIndex >= dhikrList.length) {
+                            if (!isOpenCounter && (currentIndex >= dhikrList.length || currentIndex === index)) {
                                 currentIndex = 0;
-                                currentCount = dhikrList[currentIndex].count;
-                                originalCount = currentCount;
+                                currentCount = 0;
                                 updateDhikrDisplay();
                             }
                         }
@@ -779,7 +786,7 @@
 
             // Add keyboard support (spacebar) for tasbih
             document.addEventListener('keydown', function(event) {
-                if (event.code === 'Space' && counterTabContent.style.display !== 'none') {
+                if (event.code === 'Space' && !counterTabContent.classList.contains('hidden')) {
                     event.preventDefault(); // Prevent page scrolling
                     countBtn.click();
                 }

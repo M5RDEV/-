@@ -715,351 +715,354 @@
 
     <div class="overlay" id="overlay"></div>
     <button class="mode-toggle" id="mode-toggle"><i class="fas fa-sun"></i></button>
-    <button class="settings-toggle" id="settings-toggle"><i class="fas fa-cog"></i></button>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initial dhikr list
-            const dhikrList = [
-                { text: 'سبحان الله', count: 33 },
-                { text: 'الحمد لله', count: 33 },
-                { text: 'الله أكبر', count: 33 },
-                { text: 'لا إله إلا الله', count: 100 },
-                { text: 'استغفر الله', count: 100 }
-            ];
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial dhikr list
+        const dhikrList = [
+            { text: 'سبحان الله', count: 33 },
+            { text: 'الحمد لله', count: 33 },
+            { text: 'الله أكبر', count: 33 },
+            { text: 'لا إله إلا الله', count: 100 },
+            { text: 'استغفر الله', count: 100 }
+        ];
 
-            // DOM elements
-            const settingsIcon = document.getElementById('settings-icon');
-            const backIcon = document.getElementById('back-icon');
-            const counterTabContent = document.querySelector('.counter-tab');
-            const settingsContainer = document.querySelector('.settings-container');
-            const dhikrSelect = document.getElementById('dhikr-select');
-            const currentDhikr = document.getElementById('current-dhikr');
-            const countElement = document.getElementById('count');
-            const remainingElement = document.getElementById('remaining');
-            const countBtn = document.getElementById('count-btn');
-            const resetBtn = document.getElementById('reset-btn');
-            const autoNext = document.getElementById('auto-next');
-            const addDhikrBtn = document.getElementById('add-dhikr');
-            const newDhikrInput = document.getElementById('new-dhikr');
-            const dhikrCountInput = document.getElementById('dhikr-count');
-            const dhikrItems = document.getElementById('dhikr-items');
-            const modeToggle = document.getElementById('mode-toggle');
-            const settingsToggle = document.getElementById('settings-toggle');
-            const overlay = document.getElementById('overlay');
-            const counter = document.getElementById('counter');
+        // DOM elements
+        const settingsIcon = document.getElementById('settings-icon');
+        const backIcon = document.getElementById('back-icon');
+        const counterTabContent = document.querySelector('.counter-tab');
+        const settingsContainer = document.querySelector('.settings-container');
+        const dhikrSelect = document.getElementById('dhikr-select');
+        const currentDhikr = document.getElementById('current-dhikr');
+        const countElement = document.getElementById('count');
+        const remainingElement = document.getElementById('remaining');
+        const countBtn = document.getElementById('count-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const autoNext = document.getElementById('auto-next');
+        const addDhikrBtn = document.getElementById('add-dhikr');
+        const newDhikrInput = document.getElementById('new-dhikr');
+        const dhikrCountInput = document.getElementById('dhikr-count');
+        const dhikrItems = document.getElementById('dhikr-items');
+        const modeToggle = document.getElementById('mode-toggle');
+        const overlay = document.getElementById('overlay');
+        const counter = document.getElementById('counter');
 
-            // Variables
-            let currentIndex = -1; // Start with the open counter
-            let currentCount = 0;  // Start at 0 for open counter
-            let totalCount = 0;    // For counting upwards in regular dhikr mode
-            let isOpenCounter = true; // Flag for open counter mode
+        // Variables
+        let currentIndex = -1; // Start with the open counter
+        let currentCount = 0;  // Start at 0 for open counter
+        let isOpenCounter = true; // Flag for open counter mode
+        let completedCount = 0;  // Counter for completed dhikrs
 
-            // Initialize
-            updateDhikrDisplay();
-            renderDhikrList();
+        // Initialize
+        updateDhikrDisplay();
+        renderDhikrList();
 
-            // Settings icon click event (for mobile view in header)
-            settingsIcon.addEventListener('click', function() {
-                toggleSettings();
-            });
-
-            // Back icon click event (for mobile view in header)
-            backIcon.addEventListener('click', function() {
-                toggleSettings();
-            });
-
-            // Settings toggle button (for all screen sizes)
-            settingsToggle.addEventListener('click', function() {
-                toggleSettings();
-                this.classList.toggle('active');
-            });
-
-            // Overlay click to close settings on mobile
-            overlay.addEventListener('click', function() {
-                if (settingsContainer.classList.contains('active')) {
-                    toggleSettings();
-                    settingsToggle.classList.remove('active');
-                }
-            });
-
-            // Function to toggle settings visibility
-            function toggleSettings() {
-                settingsContainer.classList.toggle('active');
-                counterTabContent.classList.toggle('shifted');
-                overlay.classList.toggle('active');
-                
-                // Toggle header icons for mobile
-                if (window.innerWidth <= 768) {
-                    if (settingsContainer.classList.contains('active')) {
-                        settingsIcon.style.display = 'none';
-                        backIcon.style.display = 'flex';
-                    } else {
-                        settingsIcon.style.display = 'flex';
-                        backIcon.style.display = 'none';
-                    }
-                }
-                
-                // Animation for settings card
-                const settingsCard = settingsContainer.querySelector('.card');
-                if (settingsContainer.classList.contains('active')) {
-                    settingsCard.classList.add('fade-in');
-                    setTimeout(() => {
-                        settingsCard.classList.remove('fade-in');
-                    }, 500);
-                }
-            }
-
-            // Counter functionality - now shows count upwards for ALL counters
-            countBtn.addEventListener('click', function() {
-                if (isOpenCounter) {
-                    // For open counter, increment
-                    currentCount++;
-                    
-                    // Add animation for milestone every 100 counts
-                    if (currentCount % 100 === 0 && currentCount > 0) {
-                        counter.classList.add('milestone');
-                        setTimeout(() => {
-                            counter.classList.remove('milestone');
-                        }, 1000);
-                    } else {
-                        // Regular pulse animation for each count
-                        counter.classList.add('pulse');
-                        setTimeout(() => {
-                            counter.classList.remove('pulse');
-                        }, 300);
-                    }
-                } else {
-                    // For regular counters, increment the counting and decrement the remaining
-                    currentCount++;
-                    
-                    // Check if regular counter reached the target
-                    if (currentCount === dhikrList[currentIndex].count) {
-                        // Celebration animation
-                        counter.classList.add('celebrate');
-                        countElement.classList.add('pulse');
-                        setTimeout(() => {
-                            counter.classList.remove('celebrate');
-                            countElement.classList.remove('pulse');
-                        }, 1200);
-                        
-                        // Add glow effect
-                        counter.classList.add('glow');
-                        setTimeout(() => {
-                            counter.classList.remove('glow');
-                        }, 3000);
-                        
-                        // Auto-next if checked
-                        if (autoNext.checked) {
-                            setTimeout(() => {
-                                nextDhikr();
-                            }, 1500);
-                        }
-                    } else if (currentCount > dhikrList[currentIndex].count) {
-                        // Prevent exceeding the target count
-                        currentCount = dhikrList[currentIndex].count;
-                    } else {
-                        // Regular pulse animation for each count
-                        counter.classList.add('pulse');
-                        setTimeout(() => {
-                            counter.classList.remove('pulse');
-                        }, 300);
-                    }
-                }
-                
-                updateDhikrDisplay();
-
-                // Give visual feedback to the button
-                countBtn.classList.add('pulse');
-                setTimeout(() => {
-                    countBtn.classList.remove('pulse');
-                }, 300);
-            });
-
-            // Reset button functionality with shake animation
-            resetBtn.addEventListener('click', function() {
-                // Reset counter to 0
-                currentCount = 0;
-                
-                // Add shake animation
-                counter.classList.add('shake');
-                setTimeout(() => {
-                    counter.classList.remove('shake');
-                }, 500);
-                
-                // Reset button animation
-                resetBtn.classList.add('pulse');
-                setTimeout(() => {
-                    resetBtn.classList.remove('pulse');
-                }, 300);
-                
-                updateDhikrDisplay();
-            });
-
-          // Change dhikr selection
-            dhikrSelect.addEventListener('change', function() {
-                currentIndex = parseInt(this.value);
-                
-                // Check if open counter is selected
-                isOpenCounter = (currentIndex === -1);
-                
-                // Reset counter to 0 when changing dhikr
-                currentCount = 0;
-                
-                updateDhikrDisplay();
-            });
-
-            // Add new dhikr
-            addDhikrBtn.addEventListener('click', function() {
-                const text = newDhikrInput.value.trim();
-                const count = parseInt(dhikrCountInput.value);
-
-                if (text && count > 0) {
-                    dhikrList.push({ text, count });
-                    renderDhikrList();
-                    updateDhikrSelect();
-                    newDhikrInput.value = '';
-                    dhikrCountInput.value = '33';
-                }
-            });
-
-            // Toggle dark mode with animation
-            modeToggle.addEventListener('click', function() {
-                // Add rotation animation to toggle button
-                this.classList.add('rotate');
-                
-                // Add transition class for smooth theme change
-                document.body.classList.add('theme-transition');
-                document.querySelectorAll('.card, header, input, select').forEach(el => {
-                    el.classList.add('theme-transition');
-                });
-                
-                // Toggle dark mode
-                document.body.classList.toggle('dark-mode');
-                
-                // Change icon with animation
-                if (document.body.classList.contains('dark-mode')) {
-                    setTimeout(() => {
-                        document.querySelector('.mode-toggle i').className = 'fas fa-moon';
-                        modeToggle.classList.add('fade-in');
-                    }, 300);
-                } else {
-                    setTimeout(() => {
-                        document.querySelector('.mode-toggle i').className = 'fas fa-sun';
-                        modeToggle.classList.add('fade-in');
-                    }, 300);
-                }
-                
-                // Remove animation classes after they complete
-                setTimeout(() => {
-                    modeToggle.classList.remove('rotate');
-                    modeToggle.classList.remove('fade-in');
-                    
-                    document.body.classList.remove('theme-transition');
-                    document.querySelectorAll('.card, header, input, select').forEach(el => {
-                        el.classList.remove('theme-transition');
-                    });
-                }, 800);
-            });
-
-            // Helper functions
-            function updateDhikrDisplay() {
-                if (isOpenCounter) {
-                    // For open counter
-                    currentDhikr.textContent = "عداد مفتوح";
-                    countElement.textContent = currentCount;
-                    remainingElement.textContent = `العدد الحالي: ${currentCount}`;
-                } else {
-                    // For regular counters, display the current count
-                    currentDhikr.textContent = dhikrList[currentIndex].text;
-                    countElement.textContent = currentCount;
-                    remainingElement.textContent = `العدد الحالي: ${currentCount} / ${dhikrList[currentIndex].count}`;
-                }
-            }
-
-            function nextDhikr() {
-                if (isOpenCounter) {
-                    // If we're in open counter mode, move to the first regular dhikr
-                    currentIndex = 0;
-                } else {
-                    // If we're in regular mode, move to the next dhikr
-                    currentIndex = (currentIndex + 1) % dhikrList.length;
-                }
-                
-                // Update the select element
-                dhikrSelect.value = currentIndex;
-                
-                // Update the isOpenCounter flag
-                isOpenCounter = (currentIndex === -1);
-                
-                // Reset the current count
-                currentCount = 0;
-                
-                // Apply animation to the counter text
-                countElement.classList.add('fade-in');
-                setTimeout(() => {
-                    countElement.classList.remove('fade-in');
-                }, 500);
-                
-                updateDhikrDisplay();
-            }
-
-            function renderDhikrList() {
-                dhikrItems.innerHTML = '';
-                dhikrList.forEach((dhikr, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'dhikr-item';
-                    item.innerHTML = `
-                        <div>${dhikr.text} - ${dhikr.count}</div>
-                        <button class="delete-btn" data-index="${index}"><i class="fas fa-trash-alt"></i></button>
-                    `;
-                    dhikrItems.appendChild(item);
-                });
-
-                // Add delete functionality
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const index = parseInt(this.getAttribute('data-index'));
-                        if (dhikrList.length > 1) {
-                            dhikrList.splice(index, 1);
-                            renderDhikrList();
-                            updateDhikrSelect();
-                            
-                            // Handle the case when the current selected dhikr is deleted
-                            if (!isOpenCounter && (currentIndex >= dhikrList.length || currentIndex === index)) {
-                                currentIndex = 0;
-                                currentCount = 0;
-                                updateDhikrDisplay();
-                            }
-                        }
-                    });
-                });
-            }
-
-            function updateDhikrSelect() {
-                // Keep the open counter option
-                dhikrSelect.innerHTML = '<option value="-1">عداد مفتوح (تصاعدي)</option>';
-                
-                // Add all other dhikrs
-                dhikrList.forEach((dhikr, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = `${dhikr.text} - ${dhikr.count}`;
-                    dhikrSelect.appendChild(option);
-                });
-                
-                // Set the current selection
-                dhikrSelect.value = currentIndex;
-            }
-
-            // Add keyboard support (spacebar) for tasbih
-            document.addEventListener('keydown', function(event) {
-                if (event.code === 'Space' && !counterTabContent.classList.contains('hidden')) {
-                    event.preventDefault(); // Prevent page scrolling
-                    countBtn.click();
-                }
-            });
+        // Settings icon click event (for all devices)
+        settingsIcon.addEventListener('click', function() {
+            toggleSettings();
         });
+
+        // Back icon click event (for all devices)
+        backIcon.addEventListener('click', function() {
+            toggleSettings();
+        });
+
+        // Overlay click to close settings
+        overlay.addEventListener('click', function() {
+            if (settingsContainer.classList.contains('active')) {
+                toggleSettings();
+            }
+        });
+
+        // Function to toggle settings visibility
+        function toggleSettings() {
+            settingsContainer.classList.toggle('active');
+            counterTabContent.classList.toggle('shifted');
+            overlay.classList.toggle('active');
+            
+            // Toggle header icons
+            if (settingsContainer.classList.contains('active')) {
+                settingsIcon.style.display = 'none';
+                backIcon.style.display = 'flex';
+            } else {
+                settingsIcon.style.display = 'flex';
+                backIcon.style.display = 'none';
+            }
+            
+            // Animation for settings card
+            const settingsCard = settingsContainer.querySelector('.card');
+            if (settingsContainer.classList.contains('active')) {
+                settingsCard.classList.add('fade-in');
+                setTimeout(() => {
+                    settingsCard.classList.remove('fade-in');
+                }, 500);
+            }
+        }
+
+        // Counter functionality 
+        countBtn.addEventListener('click', function() {
+            if (isOpenCounter) {
+                // For open counter, increment (count up)
+                currentCount++;
+                
+                // Add animation for milestone every 100 counts
+                if (currentCount % 100 === 0 && currentCount > 0) {
+                    counter.classList.add('milestone');
+                    setTimeout(() => {
+                        counter.classList.remove('milestone');
+                    }, 1000);
+                } else {
+                    // Regular pulse animation for each count
+                    counter.classList.add('pulse');
+                    setTimeout(() => {
+                        counter.classList.remove('pulse');
+                    }, 300);
+                }
+            } else {
+                // For regular counters, decrement the count (count down)
+                currentCount--;
+                completedCount = dhikrList[currentIndex].count - currentCount;
+                
+                // Check if regular counter reached zero
+                if (currentCount === 0) {
+                    // Celebration animation
+                    counter.classList.add('celebrate');
+                    countElement.classList.add('pulse');
+                    setTimeout(() => {
+                        counter.classList.remove('celebrate');
+                        countElement.classList.remove('pulse');
+                    }, 1200);
+                    
+                    // Add glow effect
+                    counter.classList.add('glow');
+                    setTimeout(() => {
+                        counter.classList.remove('glow');
+                    }, 3000);
+                    
+                    // Auto-next if checked
+                    if (autoNext.checked) {
+                        setTimeout(() => {
+                            nextDhikr();
+                        }, 1500);
+                    }
+                } else if (currentCount < 0) {
+                    // Prevent going below zero
+                    currentCount = 0;
+                } else {
+                    // Regular pulse animation for each count
+                    counter.classList.add('pulse');
+                    setTimeout(() => {
+                        counter.classList.remove('pulse');
+                    }, 300);
+                }
+            }
+            
+            updateDhikrDisplay();
+
+            // Give visual feedback to the button
+            countBtn.classList.add('pulse');
+            setTimeout(() => {
+                countBtn.classList.remove('pulse');
+            }, 300);
+        });
+
+        // Reset button functionality with shake animation
+        resetBtn.addEventListener('click', function() {
+            if (isOpenCounter) {
+                // For open counter, reset to 0
+                currentCount = 0;
+            } else {
+                // For regular counters, reset to the maximum count
+                currentCount = dhikrList[currentIndex].count;
+                completedCount = 0;
+            }
+            
+            // Add shake animation
+            counter.classList.add('shake');
+            setTimeout(() => {
+                counter.classList.remove('shake');
+            }, 500);
+            
+            // Reset button animation
+            resetBtn.classList.add('pulse');
+            setTimeout(() => {
+                resetBtn.classList.remove('pulse');
+            }, 300);
+            
+            updateDhikrDisplay();
+        });
+
+        // Change dhikr selection
+        dhikrSelect.addEventListener('change', function() {
+            currentIndex = parseInt(this.value);
+            
+            // Check if open counter is selected
+            isOpenCounter = (currentIndex === -1);
+            
+            // Reset counter to appropriate initial value
+            if (isOpenCounter) {
+                currentCount = 0;  // Open counter starts at 0 (counting up)
+                completedCount = 0;
+            } else {
+                currentCount = dhikrList[currentIndex].count;  // Regular counter starts at max (counting down)
+                completedCount = 0;
+            }
+            
+            updateDhikrDisplay();
+        });
+
+        // Add new dhikr
+        addDhikrBtn.addEventListener('click', function() {
+            const text = newDhikrInput.value.trim();
+            const count = parseInt(dhikrCountInput.value);
+
+            if (text && count > 0) {
+                dhikrList.push({ text, count });
+                renderDhikrList();
+                updateDhikrSelect();
+                newDhikrInput.value = '';
+                dhikrCountInput.value = '33';
+            }
+        });
+
+        // Toggle dark mode with animation
+        modeToggle.addEventListener('click', function() {
+            // Add rotation animation to toggle button
+            this.classList.add('rotate');
+            
+            // Add transition class for smooth theme change
+            document.body.classList.add('theme-transition');
+            document.querySelectorAll('.card, header, input, select').forEach(el => {
+                el.classList.add('theme-transition');
+            });
+            
+            // Toggle dark mode
+            document.body.classList.toggle('dark-mode');
+            
+            // Change icon with animation
+            if (document.body.classList.contains('dark-mode')) {
+                setTimeout(() => {
+                    document.querySelector('.mode-toggle i').className = 'fas fa-moon';
+                    modeToggle.classList.add('fade-in');
+                }, 300);
+            } else {
+                setTimeout(() => {
+                    document.querySelector('.mode-toggle i').className = 'fas fa-sun';
+                    modeToggle.classList.add('fade-in');
+                }, 300);
+            }
+            
+            // Remove animation classes after they complete
+            setTimeout(() => {
+                modeToggle.classList.remove('rotate');
+                modeToggle.classList.remove('fade-in');
+                
+                document.body.classList.remove('theme-transition');
+                document.querySelectorAll('.card, header, input, select').forEach(el => {
+                    el.classList.remove('theme-transition');
+                });
+            }, 800);
+        });
+
+        // Helper functions
+        function updateDhikrDisplay() {
+            if (isOpenCounter) {
+                // For open counter (counting up)
+                currentDhikr.textContent = "عداد مفتوح";
+                countElement.textContent = currentCount;
+                remainingElement.textContent = `العدد الحالي: ${currentCount}`;
+            } else {
+                // For regular counters (counting down), display completed/total count
+                currentDhikr.textContent = dhikrList[currentIndex].text;
+                countElement.textContent = currentCount;
+                completedCount = dhikrList[currentIndex].count - currentCount;
+                remainingElement.textContent = `العدد المكتمل: ${completedCount} / ${dhikrList[currentIndex].count}`;
+            }
+        }
+
+        function nextDhikr() {
+            if (isOpenCounter) {
+                // If we're in open counter mode, move to the first regular dhikr
+                currentIndex = 0;
+                isOpenCounter = false;
+                currentCount = dhikrList[0].count; // Set to max for countdown
+                completedCount = 0;
+            } else {
+                // If we're in regular mode, move to the next dhikr
+                currentIndex = (currentIndex + 1) % dhikrList.length;
+                currentCount = dhikrList[currentIndex].count; // Set to max for countdown
+                completedCount = 0;
+            }
+            
+            // Update the select element
+            dhikrSelect.value = currentIndex;
+            
+            // Apply animation to the counter text
+            countElement.classList.add('fade-in');
+            setTimeout(() => {
+                countElement.classList.remove('fade-in');
+            }, 500);
+            
+            updateDhikrDisplay();
+        }
+
+        function renderDhikrList() {
+            dhikrItems.innerHTML = '';
+            dhikrList.forEach((dhikr, index) => {
+                const item = document.createElement('div');
+                item.className = 'dhikr-item';
+                item.innerHTML = `
+                    <div>${dhikr.text} - ${dhikr.count}</div>
+                    <button class="delete-btn" data-index="${index}"><i class="fas fa-trash-alt"></i></button>
+                `;
+                dhikrItems.appendChild(item);
+            });
+
+            // Add delete functionality
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    if (dhikrList.length > 1) {
+                        dhikrList.splice(index, 1);
+                        renderDhikrList();
+                        updateDhikrSelect();
+                        
+                        // Handle the case when the current selected dhikr is deleted
+                        if (!isOpenCounter && (currentIndex >= dhikrList.length || currentIndex === index)) {
+                            currentIndex = 0;
+                            currentCount = dhikrList[0].count; // Reset to max for countdown
+                            completedCount = 0;
+                            updateDhikrDisplay();
+                        }
+                    }
+                });
+            });
+        }
+
+        function updateDhikrSelect() {
+            // Keep the open counter option
+            dhikrSelect.innerHTML = '<option value="-1">عداد مفتوح (تصاعدي)</option>';
+            
+            // Add all other dhikrs
+            dhikrList.forEach((dhikr, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${dhikr.text} - ${dhikr.count}`;
+                dhikrSelect.appendChild(option);
+            });
+            
+            // Set the current selection
+            dhikrSelect.value = currentIndex;
+        }
+
+        // Add keyboard support (spacebar) for tasbih
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space' && !counterTabContent.classList.contains('hidden')) {
+                event.preventDefault(); // Prevent page scrolling
+                countBtn.click();
+            }
+        });
+    });
     </script>
 </body>
 </html>

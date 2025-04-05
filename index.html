@@ -16,6 +16,7 @@
             --button-color: #4c956c;
             --button-text: #ffffff;
             --header-color: #2c6e49;
+            --settings-width: 320px;
         }
 
         .dark-mode {
@@ -45,23 +46,25 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
         }
 
         header {
             background-color: var(--header-color);
             color: #ffffff;
-            padding: 1rem;
+            padding: 1.5rem;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: background-color 0.5s;
             position: relative;
+            z-index: 100;
         }
 
         .header-icons {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            left: 1rem;
+            left: 1.5rem;
             display: flex;
             gap: 0.8rem;
         }
@@ -71,76 +74,80 @@
             color: white;
             border: none;
             border-radius: 8px;
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
         }
 
         .header-icon:hover {
             background-color: rgba(255, 255, 255, 0.3);
-        }
-
-        @media (min-width: 769px) {
-            .header-icons {
-                display: none;
-            }
+            transform: scale(1.05);
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 1rem;
             flex: 1;
+            position: relative;
+            transition: padding 0.3s ease;
         }
 
         .app-container {
             display: flex;
-            flex-direction: row;
-            gap: 1.5rem;
+            position: relative;
+            overflow: hidden;
             margin-top: 1rem;
-        }
-
-        @media (max-width: 768px) {
-            .app-container {
-                flex-direction: column;
-            }
+            min-height: calc(100vh - 150px);
         }
 
         .counter-tab {
-            flex: 2;
-            transition: all 0.3s ease;
+            flex: 1;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(0);
+            padding: 1rem;
+        }
+
+        .counter-tab.shifted {
+            transform: translateX(calc(var(--settings-width) * -1));
         }
 
         .settings-container {
-            flex: 1;
-            transition: all 0.3s ease;
+            position: absolute;
+            top: 0;
+            right: -100%;
+            width: var(--settings-width);
+            height: 100%;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 10;
         }
 
-        @media (max-width: 768px) {
-            .settings-container {
-                display: none;
-            }
-
-            .settings-container.active {
-                display: block;
-            }
-
-            .counter-tab.hidden {
-                display: none;
-            }
+        .settings-container.active {
+            right: 0;
+            opacity: 1;
+            visibility: visible;
         }
 
         .card {
             background-color: var(--card-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.5s;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s;
             height: 100%;
+            transform: translateY(0);
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
         }
 
         .dhikr-select {
@@ -153,48 +160,67 @@
         .dhikr-select label {
             font-weight: bold;
             margin-bottom: 0.5rem;
+            font-size: 1.1rem;
         }
 
         .dhikr-select select {
-            padding: 0.8rem;
-            border-radius: 4px;
+            padding: 1rem;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
             background-color: var(--card-color);
             color: var(--text-color);
-            font-size: 1rem;
-            transition: background-color 0.5s, color 0.5s;
+            font-size: 1.1rem;
+            transition: all 0.5s;
+            cursor: pointer;
+        }
+
+        .dhikr-select select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(76, 149, 108, 0.2);
+            outline: none;
         }
 
         .counter-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1.5rem;
-            margin-top: 1rem;
+            gap: 2rem;
+            margin-top: 2rem;
         }
 
         .dhikr-text {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             text-align: center;
             margin-bottom: 1rem;
+            transition: all 0.3s;
         }
 
         .counter {
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 150px;
-            height: 150px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
             background-color: var(--card-color);
-            border: 4px solid var(--primary-color);
+            border: 6px solid var(--primary-color);
             color: var(--count-color);
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
             user-select: none;
             position: relative;
-            transition: border-color 0.5s, transform 0.3s, box-shadow 0.3s;
+            transition: all 0.5s;
+        }
+
+        /* Larger counter for desktop */
+        @media (min-width: 992px) {
+            .counter {
+                width: 220px;
+                height: 220px;
+                font-size: 3.5rem;
+                border-width: 8px;
+            }
         }
 
         .counter span {
@@ -208,40 +234,44 @@
             display: flex;
             justify-content: center;
             gap: 1rem;
-            font-size: 1rem;
+            font-size: 1.2rem;
             color: var(--text-color);
         }
 
         .counter-buttons {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin-top: 1rem;
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
         .btn {
-            padding: 0.7rem 1.2rem;
+            padding: 0.9rem 1.5rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             background-color: var(--button-color);
             color: var(--button-text);
-            font-size: 1rem;
+            font-size: 1.1rem;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .btn:hover {
             opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .btn:active {
-            transform: scale(0.98);
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .btn-tasbih {
             background-color: var(--primary-color);
-            font-size: 1.2rem;
-            padding: 1rem 2rem;
+            font-size: 1.3rem;
+            padding: 1.2rem 2.5rem;
         }
 
         .btn-reset {
@@ -249,36 +279,53 @@
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
             font-weight: bold;
+            font-size: 1.1rem;
         }
 
         .form-group input {
             width: 100%;
-            padding: 0.8rem;
-            border-radius: 4px;
+            padding: 1rem;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
             background-color: var(--card-color);
             color: var(--text-color);
-            font-size: 1rem;
-            transition: background-color 0.5s, color 0.5s;
+            font-size: 1.1rem;
+            transition: all 0.5s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(76, 149, 108, 0.2);
+            outline: none;
         }
 
         .dhikr-list {
-            margin-top: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .dhikr-list h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
         }
 
         .dhikr-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.8rem;
+            padding: 1rem;
             border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .dhikr-item:hover {
+            background-color: rgba(0, 0, 0, 0.03);
         }
 
         .dhikr-item:last-child {
@@ -289,23 +336,29 @@
             background-color: #dc3545;
             color: white;
             border: none;
-            border-radius: 4px;
-            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            padding: 0.5rem 0.8rem;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
         }
 
         .switch-container {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin: 1rem 0;
+            gap: 1rem;
+            margin: 1.5rem 0;
         }
 
         .switch {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 24px;
+            width: 60px;
+            height: 30px;
         }
 
         .switch input {
@@ -323,14 +376,14 @@
             bottom: 0;
             background-color: #ccc;
             transition: .4s;
-            border-radius: 24px;
+            border-radius: 30px;
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 16px;
-            width: 16px;
+            height: 22px;
+            width: 22px;
             left: 4px;
             bottom: 4px;
             background-color: white;
@@ -347,71 +400,128 @@
         }
 
         input:checked + .slider:before {
-            transform: translateX(26px);
+            transform: translateX(30px);
         }
 
         .footer {
             text-align: center;
-            padding: 1rem;
+            padding: 1.5rem;
             margin-top: 2rem;
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: var(--text-color);
             opacity: 0.8;
         }
 
         .mode-toggle {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 30px;
+            right: 30px;
             background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            font-size: 1.5rem;
-            transition: transform 0.3s, background-color 0.5s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 1.8rem;
+            transition: all 0.3s;
+            z-index: 100;
         }
 
-        /* Add pulse animation for counter button */
+        .mode-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Settings toggle button for all screen sizes */
+        .settings-toggle {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .settings-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .settings-toggle i {
+            transition: all 0.5s;
+        }
+
+        .settings-toggle.active i {
+            transform: rotate(180deg);
+        }
+
+        /* Overlay for mobile */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            z-index: 5;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Animations */
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.08); }
             100% { transform: scale(1); }
         }
 
         .pulse {
-            animation: pulse 0.3s;
+            animation: pulse 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Added animations */
         @keyframes celebrate {
             0% { transform: scale(1); }
-            20% { transform: scale(1.15); box-shadow: 0 0 20px rgba(76, 149, 108, 0.6); }
+            20% { transform: scale(1.15); box-shadow: 0 0 25px rgba(76, 149, 108, 0.7); }
             40% { transform: scale(1); }
-            60% { transform: scale(1.1); box-shadow: 0 0 15px rgba(76, 149, 108, 0.6); }
+            60% { transform: scale(1.1); box-shadow: 0 0 20px rgba(76, 149, 108, 0.7); }
             80% { transform: scale(1); }
-            100% { transform: scale(1.05); box-shadow: 0 0 10px rgba(76, 149, 108, 0.6); }
+            100% { transform: scale(1.05); box-shadow: 0 0 15px rgba(76, 149, 108, 0.7); }
         }
 
         .celebrate {
-            animation: celebrate 1s;
+            animation: celebrate 1.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* New animation for hitting 100 milestone in open counter */
         @keyframes milestone {
             0% { transform: scale(1); border-color: var(--primary-color); }
-            50% { transform: scale(1.12); border-color: #ffc107; box-shadow: 0 0 25px rgba(255, 193, 7, 0.7); }
+            50% { transform: scale(1.15); border-color: #ffc107; box-shadow: 0 0 30px rgba(255, 193, 7, 0.8); }
             100% { transform: scale(1); border-color: var(--primary-color); }
         }
 
         .milestone {
-            animation: milestone 0.8s;
+            animation: milestone 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @keyframes rotate {
@@ -420,21 +530,106 @@
         }
 
         .rotate {
-            animation: rotate 0.6s ease-in-out;
+            animation: rotate 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .fade-in {
-            animation: fadeIn 0.5s;
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-15px); }
+            60% { transform: translateY(-7px); }
+        }
+
+        .bounce {
+            animation: bounce 0.8s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(76, 149, 108, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(76, 149, 108, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(76, 149, 108, 0.5); }
+        }
+
+        .glow {
+            animation: glow 1.5s infinite;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 992px) {
+            .container {
+                padding: 2rem;
+            }
+            
+            .card {
+                padding: 2.5rem;
+            }
+            
+            .dhikr-text {
+                font-size: 2rem;
+            }
+            
+            .btn-tasbih {
+                font-size: 1.5rem;
+                padding: 1.3rem 3rem;
+            }
+            
+            /* Make the settings drawer wider on desktop */
+            :root {
+                --settings-width: 400px;
+            }
+        }
+
+        /* For very small screens */
+        @media (max-width: 400px) {
+            .counter {
+                width: 140px;
+                height: 140px;
+                font-size: 2.5rem;
+            }
+            
+            .btn {
+                padding: 0.8rem 1.2rem;
+            }
+            
+            :root {
+                --settings-width: 280px;
+            }
+        }
+
+        /* For very large screens */
+        @media (min-width: 1600px) {
+            .container {
+                max-width: 1400px;
+            }
+            
+            .counter {
+                width: 250px;
+                height: 250px;
+                font-size: 4rem;
+            }
         }
 
         /* Theme transition */
         .theme-transition {
-            transition: background-color 0.8s ease, color 0.8s ease, border-color 0.8s ease;
+            transition: all 0.8s ease;
         }
     </style>
     <!-- إضافة Font Awesome للأيقونات -->
@@ -518,7 +713,9 @@
         </div>
     </div>
 
+    <div class="overlay" id="overlay"></div>
     <button class="mode-toggle" id="mode-toggle"><i class="fas fa-sun"></i></button>
+    <button class="settings-toggle" id="settings-toggle"><i class="fas fa-cog"></i></button>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -548,6 +745,8 @@
             const dhikrCountInput = document.getElementById('dhikr-count');
             const dhikrItems = document.getElementById('dhikr-items');
             const modeToggle = document.getElementById('mode-toggle');
+            const settingsToggle = document.getElementById('settings-toggle');
+            const overlay = document.getElementById('overlay');
             const counter = document.getElementById('counter');
 
             // Variables
@@ -560,21 +759,56 @@
             updateDhikrDisplay();
             renderDhikrList();
 
-            // Settings icon click event (for mobile view)
+            // Settings icon click event (for mobile view in header)
             settingsIcon.addEventListener('click', function() {
-                counterTabContent.classList.add('hidden');
-                settingsContainer.classList.add('active');
-                settingsIcon.style.display = 'none';
-                backIcon.style.display = 'flex';
+                toggleSettings();
             });
 
-            // Back icon click event (for mobile view)
+            // Back icon click event (for mobile view in header)
             backIcon.addEventListener('click', function() {
-                counterTabContent.classList.remove('hidden');
-                settingsContainer.classList.remove('active');
-                settingsIcon.style.display = 'flex';
-                backIcon.style.display = 'none';
+                toggleSettings();
             });
+
+            // Settings toggle button (for all screen sizes)
+            settingsToggle.addEventListener('click', function() {
+                toggleSettings();
+                this.classList.toggle('active');
+            });
+
+            // Overlay click to close settings on mobile
+            overlay.addEventListener('click', function() {
+                if (settingsContainer.classList.contains('active')) {
+                    toggleSettings();
+                    settingsToggle.classList.remove('active');
+                }
+            });
+
+            // Function to toggle settings visibility
+            function toggleSettings() {
+                settingsContainer.classList.toggle('active');
+                counterTabContent.classList.toggle('shifted');
+                overlay.classList.toggle('active');
+                
+                // Toggle header icons for mobile
+                if (window.innerWidth <= 768) {
+                    if (settingsContainer.classList.contains('active')) {
+                        settingsIcon.style.display = 'none';
+                        backIcon.style.display = 'flex';
+                    } else {
+                        settingsIcon.style.display = 'flex';
+                        backIcon.style.display = 'none';
+                    }
+                }
+                
+                // Animation for settings card
+                const settingsCard = settingsContainer.querySelector('.card');
+                if (settingsContainer.classList.contains('active')) {
+                    settingsCard.classList.add('fade-in');
+                    setTimeout(() => {
+                        settingsCard.classList.remove('fade-in');
+                    }, 500);
+                }
+            }
 
             // Counter functionality - now shows count upwards for ALL counters
             countBtn.addEventListener('click', function() {
@@ -587,7 +821,13 @@
                         counter.classList.add('milestone');
                         setTimeout(() => {
                             counter.classList.remove('milestone');
-                        }, 800);
+                        }, 1000);
+                    } else {
+                        // Regular pulse animation for each count
+                        counter.classList.add('pulse');
+                        setTimeout(() => {
+                            counter.classList.remove('pulse');
+                        }, 300);
                     }
                 } else {
                     // For regular counters, increment the counting and decrement the remaining
@@ -597,38 +837,66 @@
                     if (currentCount === dhikrList[currentIndex].count) {
                         // Celebration animation
                         counter.classList.add('celebrate');
+                        countElement.classList.add('pulse');
                         setTimeout(() => {
                             counter.classList.remove('celebrate');
-                        }, 1000);
+                            countElement.classList.remove('pulse');
+                        }, 1200);
+                        
+                        // Add glow effect
+                        counter.classList.add('glow');
+                        setTimeout(() => {
+                            counter.classList.remove('glow');
+                        }, 3000);
                         
                         // Auto-next if checked
                         if (autoNext.checked) {
                             setTimeout(() => {
                                 nextDhikr();
-                            }, 1000);
+                            }, 1500);
                         }
                     } else if (currentCount > dhikrList[currentIndex].count) {
                         // Prevent exceeding the target count
                         currentCount = dhikrList[currentIndex].count;
+                    } else {
+                        // Regular pulse animation for each count
+                        counter.classList.add('pulse');
+                        setTimeout(() => {
+                            counter.classList.remove('pulse');
+                        }, 300);
                     }
                 }
                 
                 updateDhikrDisplay();
 
-                // Give visual feedback
+                // Give visual feedback to the button
                 countBtn.classList.add('pulse');
                 setTimeout(() => {
                     countBtn.classList.remove('pulse');
-                }, 150);
+                }, 300);
             });
 
-            // Reset button functionality 
+            // Reset button functionality with shake animation
             resetBtn.addEventListener('click', function() {
-                currentCount = 0; // Reset to 0 for all counters
+                // Reset counter to 0
+                currentCount = 0;
+                
+                // Add shake animation
+                counter.classList.add('shake');
+                setTimeout(() => {
+                    counter.classList.remove('shake');
+                }, 500);
+                
+                // Reset button animation
+                resetBtn.classList.add('pulse');
+                setTimeout(() => {
+                    resetBtn.classList.remove('pulse');
+                }, 300);
+                
                 updateDhikrDisplay();
             });
 
-            // Change dhikr selection
+          // Change dhikr selection
             dhikrSelect.addEventListener('change', function() {
                 currentIndex = parseInt(this.value);
                 

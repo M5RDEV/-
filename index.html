@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>عداد التسبيح</title>
     <style>
-  :root {
+:root {
     --primary-color: #2c9678;
     --secondary-color: #1b6f56;
     --background-color: #f8f9fa;
@@ -82,17 +82,22 @@ h1, h2, h3 {
     font-weight: 600;
 }
 
+/* تحسين تناسق الهيدر مع الشاشات المختلفة */
 header {
     background: linear-gradient(135deg, var(--header-color), var(--secondary-color));
     color: #ffffff;
-    padding: 1.5rem;
+    padding: 1rem 1.5rem; /* تقليل الحشو للهواتف */
     text-align: center;
     box-shadow: var(--shadow-md);
     position: relative;
     z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 header h1 {
+    font-size: 1.5rem; /* تصغير حجم النص للهواتف */
     font-weight: 700;
     letter-spacing: 0.5px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -103,22 +108,24 @@ header h1:hover {
     transform: translateY(-2px);
 }
 
+/* تعديل موضع أيقونة الإعدادات لتكون في أعلى مربع التسبيح */
 .header-icons {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    left: 1.5rem;
+    right: 1.5rem; /* تم تغيير left إلى right للمحاذاة على اليمين */
     display: flex;
     gap: 0.8rem;
 }
 
+/* تعديل أيقونات الهيدر لتكون أكثر تناسبًا */
 .header-icon {
     background-color: rgba(255, 255, 255, 0.15);
     color: white;
     border: none;
     border-radius: 12px;
-    width: 44px;
-    height: 44px;
+    width: 40px; /* تصغير قليلاً للهواتف */
+    height: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -725,16 +732,16 @@ input:checked + .slider:before {
     width: 100px;
 }
 
-.settings-toggle, .mode-toggle {
-    width: 60px;
-    height: 60px;
-    font-size: 1.5rem;
+/* إزالة زر الإعدادات المتحرك من الأسفل حيث تم نقله للهيدر */
+.settings-toggle {
+    display: none;
 }
 
+/* تعديل موضع أيقونة الوضع الليلي لتحل محل أيقونة الإعدادات السابقة */
 .mode-toggle {
     position: fixed;
     bottom: 30px;
-    right: 30px;
+    left: 30px; /* تم تغيير right إلى left */
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
     border: none;
@@ -747,50 +754,17 @@ input:checked + .slider:before {
     font-size: 1.8rem;
     transition: all var(--transition-fast);
     z-index: 100;
+    width: 60px;
+    height: 60px;
 }
 
 .mode-toggle:hover {
-    transform: scale(1.1) rotate(15deg);
+    transform: scale(1.1) rotate(-15deg); /* تغيير اتجاه الدوران بما يناسب الموضع الجديد */
     box-shadow: var(--shadow-lg);
 }
 
 .mode-toggle:active {
     transform: scale(0.95);
-}
-
-/* Settings toggle button for all screen sizes */
-.settings-toggle {
-    position: fixed;
-    bottom: 30px;
-    left: 30px;
-    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-    color: white;
-    border: none;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    box-shadow: var(--shadow-md);
-    transition: all var(--transition-fast);
-    z-index: 100;
-}
-
-.settings-toggle:hover {
-    transform: scale(1.1) rotate(-15deg);
-    box-shadow: var(--shadow-lg);
-}
-
-.settings-toggle:active {
-    transform: scale(0.95);
-}
-
-.settings-toggle i {
-    transition: all var(--transition-medium);
-}
-
-.settings-toggle.active i {
-    transform: rotate(180deg);
 }
 
 /* Overlay for mobile */
@@ -1034,12 +1008,12 @@ input:checked + .slider:before {
 </head>
 <body>
     <header>
-        <h1>عداد التسبيح</h1>
-        <div class="header-icons">
-            <button class="header-icon" id="settings-icon"><i class="fas fa-cog"></i></button>
-            <button class="header-icon" id="back-icon" style="display: none;"><i class="fas fa-arrow-right"></i></button>
-        </div>
-    </header>
+    <div class="header-icons">
+        <button class="header-icon" id="settings-icon"><i class="fas fa-cog"></i></button>
+        <button class="header-icon" id="back-icon" style="display: none;"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <h1>عداد التسبيح</h1>
+</header>
 
     <div class="container">
         <div class="app-container">
